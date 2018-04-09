@@ -40,9 +40,9 @@ class QuestionAnswer extends WebSocketController
             $client_log['active_id'] = $request['active_id'];
             $user_client->add($client_log);
             //随后去掉
-            $user_client= $this->client()->getFd();
-            TaskManager::async(function () use ($user_client, $openid) {
-                SocketResponse::response($user_client, $openid);
+            $user_fd= $this->client()->getFd();
+            TaskManager::async(function () use ($user_fd, $openid) {
+                SocketResponse::response($user_fd, $openid);
             });
         }
         $count = $user_client->online_num($request['active_id']);
