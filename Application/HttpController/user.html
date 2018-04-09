@@ -46,7 +46,7 @@
             data=evt.data;
             data=$.parseJSON(data);
             console.log(data);
-            addLine(evt.data.question);
+            addLine(data.question);
         };
 
         websocket.onerror = function (evt, e) {

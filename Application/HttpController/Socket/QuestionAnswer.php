@@ -57,10 +57,9 @@ class QuestionAnswer extends WebSocketController
         $manager_info['client_id'] = $this->client()->getFd();
         $manager->add($manager_info);
         $fd = $this->client()->getFd();
-        SocketResponse::response($fd, $count);
-//        TaskManager::async(function () use ($fd, $count) {
-//            SocketResponse::response($fd, $count);
-//        });
+        TaskManager::async(function () use ($fd, $count) {
+            SocketResponse::response($fd, $count);
+        });
     }
 
     #发送问题

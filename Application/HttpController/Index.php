@@ -9,7 +9,6 @@
 namespace App\HttpController;
 
 
-use App\Model\Manager;
 use EasySwoole\Core\Http\AbstractInterface\Controller;
 
 class Index extends Controller
@@ -27,10 +26,4 @@ class Index extends Controller
         $this->response()->write($content);
     }
 
-    function test()
-    {
-        $manager = new Manager();
-        $clients = $manager->get_managers_clients(1);
-        $this->response()->write(json_encode($clients));
-    }
 }
