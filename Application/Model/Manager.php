@@ -20,6 +20,6 @@ class Manager extends BaseModel
 
     public function get_managers_clients($active_id)
     {
-        return $this->db->where('active_id',$active_id)->getValue($this->tableName, 'client_id');
+        return $this->db->where('active_id',$active_id)->get($this->tableName);
     }
 }
