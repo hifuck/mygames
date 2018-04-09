@@ -44,10 +44,9 @@
 
         websocket.onmessage = function (evt) {
             data=evt.data;
-            console.log(data);
             data=$.parseJSON(data);
             console.log(data);
-//            addLine(evt.data);
+            addLine(evt.data.question);
         };
 
         websocket.onerror = function (evt, e) {

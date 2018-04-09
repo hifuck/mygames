@@ -42,15 +42,7 @@ class QuestionAnswer extends WebSocketController
         }
         $count = $user_client->online_num($request['active_id']);
         $manager = new Manager();
-        $clients = $manager->get_managers_clients($request['active_id']);
-        if (count($clients) > 0) {
-            foreach ($clients as $client) {
-                TaskManager::async(function () use ($client, $count) {
-                    SocketResponse::response($client['client_id'], $count);
-                });
-            }
-        }
-        $this->response()->write('欢迎登录');
+        $manager->send_message($request['active_id'],$count);
     }
 
     #屏幕端 屏幕介入
@@ -65,9 +57,10 @@ class QuestionAnswer extends WebSocketController
         $manager_info['client_id'] = $this->client()->getFd();
         $manager->add($manager_info);
         $fd = $this->client()->getFd();
-        TaskManager::async(function () use ($fd, $count) {
-            SocketResponse::response($fd, $count);
-        });
+        SocketResponse::response($fd, $count);
+//        TaskManager::async(function () use ($fd, $count) {
+//            SocketResponse::response($fd, $count);
+//        });
     }
 
     #发送问题
@@ -84,14 +77,7 @@ class QuestionAnswer extends WebSocketController
         $data=json_encode($data,256);
 
         $user_client=new UserClient();
-        $clients=$user_client->get_user_clients($active_id);
-        if (count($clients) > 0) {
-            foreach ($clients as $client) {
-                TaskManager::async(function () use ($client, $data) {
-                    SocketResponse::response($client['client_id'], $data);
-                });
-            }
-        }
+        $user_client->send_message($active_id,$data);
     }
 
 
