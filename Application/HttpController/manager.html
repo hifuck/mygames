@@ -7,6 +7,7 @@
     <div>
         <p>后台页面</p>
         <sapn id="online"></sapn>
+        <span id="ft">发题</span>
         <ul id="line">
 
         </ul>
@@ -43,6 +44,17 @@
             addLine('Error occured: ' + evt.data);
         };
     };
+
+    $("#ft").click(function(){
+        websocket.send(JSON.stringify({
+            action: 'send_question',
+            content: {
+                'active_id': 1,
+            }
+        }));
+        console.log(111);
+        addLine("发题成功");
+    });
 
     function addLine(data) {
         $("#line").append("<li>" + data + "</li>");

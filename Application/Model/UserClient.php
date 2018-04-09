@@ -31,4 +31,10 @@ class UserClient extends BaseModel
         return false;
     }
 
+    public function get_user_clients($active_id)
+    {
+        $selects=['client_id'];
+        return $this->db->where('active_id',$active_id)->get($this->tableName,null,$selects);
+    }
+
 }

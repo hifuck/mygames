@@ -39,11 +39,6 @@ class QuestionAnswer extends WebSocketController
             $client_log['client_id'] = $this->client()->getFd();
             $client_log['active_id'] = $request['active_id'];
             $user_client->add($client_log);
-            //随后去掉
-            $user_fd = $this->client()->getFd();
-            TaskManager::async(function () use ($user_fd, $openid) {
-                SocketResponse::response($user_fd, $openid);
-            });
         }
         $count = $user_client->online_num($request['active_id']);
         $manager = new Manager();
@@ -73,6 +68,30 @@ class QuestionAnswer extends WebSocketController
         TaskManager::async(function () use ($fd, $count) {
             SocketResponse::response($fd, $count);
         });
+    }
+
+    #发送问题
+    function send_question()
+    {
+        $request = $this->request()->getArg('content');
+        $active_id = $request['active_id'];
+        $q_id = $request['q_id'];
+
+        $data['id']=$q_id;
+        $data['question']='1+1=?';
+        $data['answer']='2';
+        $data['time']=10;
+        $data=json_encode($data,256);
+
+        $user_client=new UserClient();
+        $clients=$user_client->get_user_clients($active_id);
+        if (count($clients) > 0) {
+            foreach ($clients as $client) {
+                TaskManager::async(function () use ($client, $data) {
+                    SocketResponse::response($client['client_id'], $data);
+                });
+            }
+        }
     }
 
 

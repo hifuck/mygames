@@ -43,9 +43,11 @@
         };
 
         websocket.onmessage = function (evt) {
-            openid=evt.data;
-            console.log(openid);
-            addLine(evt.data);
+            data=evt.data;
+            console.log(data);
+            data=$.parseJSON(data);
+            console.log(data);
+//            addLine(evt.data);
         };
 
         websocket.onerror = function (evt, e) {
