@@ -1,0 +1,13 @@
+{
+  "require": {
+    "easyswoole/easyswoole": "2.x-dev",
+    "easyswoole/swoole-ide-helper": "^1.02",
+    "joshcam/mysqli-database-class": "dev-master"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "Application/"
+    },
+    "files":["Application/Extension/helpers.php"]
+  }
+}

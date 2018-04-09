@@ -1,0 +1,13 @@
+[2018-03-28 11:52:58 $16207.0]	WARNING	swSignal_callback: signal[1] callback is null.
+[2018-03-28 11:52:58 *16218.0]	WARNING	swSignalfd_onSignal: signal[1] callback is null.
+[2018-03-28 11:52:58 *16218.0]	WARNING	swSignalfd_onSignal: signal[1] callback is null.
+[2018-03-28 11:52:58 *16219.1]	WARNING	swSignalfd_onSignal: signal[1] callback is null.
+[2018-03-28 11:52:58 *16221.2]	WARNING	swSignalfd_onSignal: signal[1] callback is null.
+[2018-03-28 11:52:58 #16206.2]	WARNING	swSignalfd_onSignal: signal[1] callback is null.
+[2018-03-28 11:52:58 $16207.0]	WARNING	swSignal_callback: signal[1] callback is null.
+[2018-03-28 11:52:58 *16222.3]	WARNING	swSignalfd_onSignal: signal[1] callback is null.
+[2018-03-28 11:52:58 *16223.4]	WARNING	swSignalfd_onSignal: signal[1] callback is null.
+[2018-03-28 11:52:58 *16224.5]	WARNING	swSignalfd_onSignal: signal[1] callback is null.
+[2018-03-28 11:52:58 *16225.6]	WARNING	swSignalfd_onSignal: signal[1] callback is null.
+[2018-03-28 11:52:58 *16226.7]	WARNING	swSignalfd_onSignal: signal[1] callback is null.
+[2018-03-28 11:52:58 $16207.0]	WARNING	swManager_check_exit_status: worker#16 abnormal exit, status=0, signal=1
