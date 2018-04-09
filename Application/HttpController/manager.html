@@ -37,7 +37,9 @@
 
         websocket.onmessage = function (evt) {
             console.log(evt);
-            $("#online").text('在线人数' + evt.data);
+            if(evt.data){
+                $("#online").text('在线人数' + evt.data);
+            }
         };
 
         websocket.onerror = function (evt, e) {
