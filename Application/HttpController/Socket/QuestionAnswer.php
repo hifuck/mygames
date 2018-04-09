@@ -51,7 +51,7 @@ class QuestionAnswer extends WebSocketController
         if (count($clients) > 0) {
             foreach ($clients as $client) {
                 TaskManager::async(function () use ($client, $count) {
-                    SocketResponse::response($client, $count);
+                    SocketResponse::response($client['client_id'], $count);
                 });
             }
         }
