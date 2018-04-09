@@ -17,8 +17,6 @@ class Index extends Controller
 
     function index()
     {
-        $manager = new Manager();
-        $clients = $manager->get_managers_clients(1);
         $content = file_get_contents(__DIR__ . '/user.html');
         $this->response()->write($content);
     }
@@ -27,5 +25,12 @@ class Index extends Controller
     {
         $content = file_get_contents(__DIR__ . '/manager.html');
         $this->response()->write($content);
+    }
+
+    function test()
+    {
+        $manager = new Manager();
+        $clients = $manager->get_managers_clients(1);
+        $this->response()->write(json_encode($clients));
     }
 }
