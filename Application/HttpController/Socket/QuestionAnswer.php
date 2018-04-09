@@ -40,7 +40,7 @@ class QuestionAnswer extends WebSocketController
             $client_log['active_id'] = $request['active_id'];
             $user_client->add($client_log);
             //随后去掉
-            $user_fd= $this->client()->getFd();
+            $user_fd = $this->client()->getFd();
             TaskManager::async(function () use ($user_fd, $openid) {
                 SocketResponse::response($user_fd, $openid);
             });
@@ -64,10 +64,15 @@ class QuestionAnswer extends WebSocketController
         $request = $this->request()->getArg('content');
         $active_id = $request['active_id'];
         $user_client = new UserClient();
-        $data['num'] = $user_client->online_num($active_id);
-        $data['msg'] = '连接成功';
-        $data['code'] = 200;
-        $this->response()->write(json_encode($data, 256));
+        $count = $user_client->online_num($active_id);
+        $manager = new Manager();
+        $manager_info['active_id'] = $active_id;
+        $manager_info['client_id'] = $this->client()->getFd();
+        $manager->add($manager_info);
+        $fd = $this->client()->getFd();
+        TaskManager::async(function () use ($fd, $count) {
+            SocketResponse::response($fd, $count);
+        });
     }
 
 
