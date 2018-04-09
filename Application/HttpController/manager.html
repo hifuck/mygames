@@ -1,13 +1,13 @@
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 </head>
 <body>
 <div>
     <div>
         <p>后台页面</p>
         <sapn id="online"></sapn>
-        <ul  id="line">
+        <ul id="line">
 
         </ul>
     </div>
@@ -20,6 +20,13 @@
     window.onload = function () {
 
         websocket.onopen = function (evt) {
+            websocket.send(JSON.stringify({
+                action: 'admin_login',
+                content: {
+                    'active_id': 1,
+                }
+            }));
+            console.log(3333);
             addLine("连接成功");
         };
 
@@ -29,15 +36,16 @@
 
         websocket.onmessage = function (evt) {
             console.log(evt);
-            $("#online").text('在线人数'+evt.data);
+            $("#online").text('在线人数' + evt.data);
         };
 
         websocket.onerror = function (evt, e) {
             addLine('Error occured: ' + evt.data);
         };
     };
+
     function addLine(data) {
-        $("#line").append("<li>"+data+"</li>");
+        $("#line").append("<li>" + data + "</li>");
     }
 </script>
 </html>
