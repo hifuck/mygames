@@ -10,7 +10,7 @@ namespace App\HttpController\Socket;
 
 
 use App\Model\Manager;
-use App\Model\User;
+use App\Model\Questions;
 use App\Model\UserClient;
 use EasySwoole\Core\Socket\WebSocketController;
 use EasySwoole\Core\Swoole\Task\TaskManager;
@@ -21,28 +21,22 @@ class QuestionAnswer extends WebSocketController
     function user_login()
     {
         $request = $this->request()->getArg('content');
-        $openid = str_random(16);
+        $user_id = $request['user_id'];
         $active_id = $request['active_id'];
-        $user = new User();
-        if (!$user->has_join($active_id, $openid)) {
-            $data['username'] = str_random(6);
-            $data['openid'] = $openid;
-            $data['active_id'] = $request['active_id'];
-            $user_id = $user->add($data);
-        } else {
-            $user_info = $user->find($openid, $active_id);
-            $user_id = $user_info['id'];
-        }
+        $round_num = $request['round_num'];
         $user_client = new UserClient();
-        if (!$user_client->is_online($request['active_id'], $openid)) {
+        if (!$user_client->is_online($active_id, $user_id,$round_num)) {
             $client_log['user_id'] = $user_id;
+            $client_log['active_id'] = $active_id;
+            $client_log['round_number'] = $round_num;
             $client_log['client_id'] = $this->client()->getFd();
-            $client_log['active_id'] = $request['active_id'];
             $user_client->add($client_log);
         }
-        $count = $user_client->online_num($request['active_id']);
+        $data['type'] = 1;
+        $data['count'] = $user_client->online_num($active_id,$round_num);
+        $data = json_encode($data, 256);
         $manager = new Manager();
-        $manager->send_message($request['active_id'],$count);
+        $manager->send_message($request['active_id'], $data);
     }
 
     #屏幕端 屏幕介入
@@ -50,15 +44,19 @@ class QuestionAnswer extends WebSocketController
     {
         $request = $this->request()->getArg('content');
         $active_id = $request['active_id'];
+        $round_num = $request['round_num'];
         $user_client = new UserClient();
-        $count = $user_client->online_num($active_id);
+        $count = $user_client->online_num($active_id,$round_num);
         $manager = new Manager();
         $manager_info['active_id'] = $active_id;
         $manager_info['client_id'] = $this->client()->getFd();
         $manager->add($manager_info);
         $fd = $this->client()->getFd();
-        TaskManager::async(function () use ($fd, $count) {
-            SocketResponse::response($fd, $count);
+        $data['type'] = 1;
+        $data['count'] = $count;
+        $data = json_encode($data, 256);
+        TaskManager::async(function () use ($fd, $data) {
+            SocketResponse::response($fd, $data);
         });
     }
 
@@ -67,16 +65,24 @@ class QuestionAnswer extends WebSocketController
     {
         $request = $this->request()->getArg('content');
         $active_id = $request['active_id'];
-        $q_id = $request['q_id'];
-
-        $data['id']=$q_id;
-        $data['question']='1+1=?';
-        $data['answer']='2';
-        $data['time']=10;
-        $data=json_encode($data,256);
-
-        $user_client=new UserClient();
-        $user_client->send_message($active_id,$data);
+        $round_num = $request['round_num']+1;   //找下一题
+        $display_order = $request['num'];
+        $que = new Questions();
+        $question = $que->find($active_id, $round_num, $display_order);
+        $data['type'] = 2;
+        $data['options'] = unserialize($question['options']);
+        $data['display_order'] = $question['display_order'];
+        $data['title'] = $question['title'];
+        $data['answer'] = $question['answer'];
+        $data = json_encode($data, 256);
+        //给用户发送题目
+        $user_client = new UserClient();
+        $user_client->send_message($active_id, $round_num, $data);
+        //返回屏幕题目
+        $fd = $this->client()->getFd();
+        TaskManager::async(function () use ($fd, $data) {
+            SocketResponse::response($fd, $data);
+        });
     }
 
 

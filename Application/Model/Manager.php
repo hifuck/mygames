@@ -9,7 +9,9 @@
 namespace App\Model;
 
 
+use App\HttpController\Socket\SocketResponse;
 use EasySwoole\Core\Swoole\ServerManager;
+use EasySwoole\Core\Swoole\Task\TaskManager;
 
 class Manager extends BaseModel
 {
@@ -29,10 +31,9 @@ class Manager extends BaseModel
             $fd = $client['client_id'];
             $info = ServerManager::getInstance()->getServer()->connection_info($fd);
             if (is_array($info)) {
-//                TaskManager::async(function () use ($fd, $data) {
-//                    SocketResponse::response($fd, $data);
-//                });
-                ServerManager::getInstance()->getServer()->push($fd, $data);
+                TaskManager::async(function () use ($fd, $data) {
+                    SocketResponse::response($fd, $data);
+                });
             } else {
                 $this->db->where('active_id', $active_id)->where('client_id', $fd)->delete($this->tableName);
             }
