@@ -65,8 +65,8 @@ class QuestionAnswer extends WebSocketController
     {
         $request = $this->request()->getArg('content');
         $active_id = $request['active_id'];
-        $round_num = $request['round_num']+1;   //找下一题
-        $display_order = $request['num'];
+        $round_num = $request['round_num'];   //找下一题
+        $display_order = $request['num']+1;
         $que = new Questions();
         $question = $que->find($active_id, $round_num, $display_order);
         $data['type'] = 2;
