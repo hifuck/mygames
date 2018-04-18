@@ -76,6 +76,7 @@ class QuestionAnswer extends WebSocketController
         $data['display_order'] = $question['display_order'];
         $data['title'] = $question['title'];
         $data['answer'] = $question['answer'];
+        $data['id'] = $question['id'];
         $data = json_encode($data, 256);
         $active = new Activity();
         $active->change_question_index($active_id, $display_order, $round_num);
