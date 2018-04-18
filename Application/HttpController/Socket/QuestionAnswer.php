@@ -9,6 +9,7 @@
 namespace App\HttpController\Socket;
 
 
+use App\Model\Activity;
 use App\Model\Manager;
 use App\Model\Questions;
 use App\Model\UserClient;
@@ -25,7 +26,7 @@ class QuestionAnswer extends WebSocketController
         $active_id = $request['active_id'];
         $round_num = $request['round_num'];
         $user_client = new UserClient();
-        if (!$user_client->is_online($active_id, $user_id,$round_num)) {
+        if (!$user_client->is_online($active_id, $user_id, $round_num)) {
             $client_log['user_id'] = $user_id;
             $client_log['active_id'] = $active_id;
             $client_log['round_number'] = $round_num;
@@ -33,7 +34,7 @@ class QuestionAnswer extends WebSocketController
             $user_client->add($client_log);
         }
         $data['type'] = 1;
-        $data['count'] = $user_client->online_num($active_id,$round_num);
+        $data['count'] = $user_client->online_num($active_id, $round_num);
         $data = json_encode($data, 256);
         $manager = new Manager();
         $manager->send_message($request['active_id'], $data);
@@ -46,7 +47,7 @@ class QuestionAnswer extends WebSocketController
         $active_id = $request['active_id'];
         $round_num = $request['round_num'];
         $user_client = new UserClient();
-        $count = $user_client->online_num($active_id,$round_num);
+        $count = $user_client->online_num($active_id, $round_num);
         $manager = new Manager();
         $manager_info['active_id'] = $active_id;
         $manager_info['client_id'] = $this->client()->getFd();
@@ -75,6 +76,8 @@ class QuestionAnswer extends WebSocketController
         $data['title'] = $question['title'];
         $data['answer'] = $question['answer'];
         $data = json_encode($data, 256);
+        $active = new Activity();
+        $active->change_question_index($active_id, $display_order, $round_num);
         //给用户发送题目
         $user_client = new UserClient();
         $user_client->send_message($active_id, $round_num, $data);
