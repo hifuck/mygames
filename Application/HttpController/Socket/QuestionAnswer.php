@@ -12,7 +12,7 @@ namespace App\HttpController\Socket;
 use App\Model\Activity;
 use App\Model\Manager;
 use App\Model\Questions;
-use App\Model\UserClient;
+use App\Model\QuestionUser;
 use EasySwoole\Core\Socket\WebSocketController;
 use EasySwoole\Core\Swoole\Task\TaskManager;
 
@@ -25,11 +25,12 @@ class QuestionAnswer extends WebSocketController
         $user_id = $request['user_id'];
         $active_id = $request['active_id'];
         $round_num = $request['round_num'];
-        $user_client = new UserClient();
+        $user_client = new QuestionUser();
         if (!$user_client->is_online($active_id, $user_id, $round_num)) {
             $client_log['user_id'] = $user_id;
             $client_log['active_id'] = $active_id;
             $client_log['round_number'] = $round_num;
+            $client_log['status'] = 1;
             $client_log['client_id'] = $this->client()->getFd();
             $user_client->add($client_log);
         }
@@ -46,7 +47,7 @@ class QuestionAnswer extends WebSocketController
         $request = $this->request()->getArg('content');
         $active_id = $request['active_id'];
         $round_num = $request['round_num'];
-        $user_client = new UserClient();
+        $user_client = new QuestionUser();
         $count = $user_client->online_num($active_id, $round_num);
         $manager = new Manager();
         $manager_info['active_id'] = $active_id;
@@ -79,7 +80,7 @@ class QuestionAnswer extends WebSocketController
         $active = new Activity();
         $active->change_question_index($active_id, $display_order, $round_num);
         //给用户发送题目
-        $user_client = new UserClient();
+        $user_client = new QuestionUser();
         $user_client->send_message($active_id, $round_num, $data);
         //返回屏幕题目
         $fd = $this->client()->getFd();
