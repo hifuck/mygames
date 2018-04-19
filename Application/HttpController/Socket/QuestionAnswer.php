@@ -33,7 +33,8 @@ class QuestionAnswer extends WebSocketController
         ScreenManagerService::sendDataBags($active_id, $data);
     }
 
-    function user_logout(){
+    function user_logout()
+    {
         $request = $this->request()->getArg('content');
         $user_id = $request['user_id'];
         $active_id = $request['active_id'];
@@ -54,10 +55,15 @@ class QuestionAnswer extends WebSocketController
         //回答错误
         if ($question['answer'] != $request['answer']) {
             UserService::removeUser($active_id, $request['user_id']);
+            $data['type'] = 1;
+            $data['count'] = UserService::getUserCount($active_id);
+            ScreenManagerService::sendDataBags($active_id, $data);
+            $user_data['type'] = 4;
+            UserService::sendDataBags($active_id, $user_data, $this->client()->getFd());
+        } else {
+            $data['type'] = 3;
+            UserService::sendDataBags($active_id, $data, $this->client()->getFd());
         }
-        $data['type'] = 1;
-        $data['count'] = UserService::getUserCount($active_id);
-        ScreenManagerService::sendDataBags($active_id, $data);
     }
 
     #屏幕端 屏幕介入
