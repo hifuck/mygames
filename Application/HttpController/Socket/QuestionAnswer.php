@@ -34,6 +34,16 @@ class QuestionAnswer extends WebSocketController
         $this->response()->write($this->client()->getFd());
     }
 
+    function user_logout(){
+        $request = $this->request()->getArg('content');
+        $user_id = $request['user_id'];
+        $active_id = $request['active_id'];
+        UserService::removeUser($active_id, $user_id);
+        $data['type'] = 1;
+        $data['count'] = UserService::getUserCount($active_id);
+        ScreenManagerService::sendDataBags($active_id, $data);
+    }
+
     //用户答题
     function user_answer()
     {
