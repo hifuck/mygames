@@ -58,7 +58,6 @@ class QuestionAnswer extends WebSocketController
         $fd = $this->client()->getFd();
         $data['type'] = 1;
         $data['count'] = UserService::getUserCount($active_id);
-        $this->response()->write('12341234');
         ScreenManagerService::sendDataBags($active_id, $data, $fd);
     }
 
