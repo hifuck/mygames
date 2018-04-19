@@ -11,6 +11,7 @@ namespace App\HttpController\Socket;
 
 use App\HttpController\Services\ScreenManagerService;
 use App\HttpController\Services\UserService;
+use App\Model\Activity;
 use App\Model\Questions;
 use EasySwoole\Core\Socket\WebSocketController;
 
@@ -75,21 +76,13 @@ class QuestionAnswer extends WebSocketController
         $data['title'] = $question['title'];
         $data['options'] = unserialize($question['options']);
         $data['display_order'] = $question['display_order'];
-
-
-        $managers = ScreenManagerService::getManagers($active_id);
-        $fd = $this->client()->getFd();
-        $res['type'] = 2;
-        $res['data'] = $managers;
-        ScreenManagerService::sendDataBags($active_id, $res, $fd);
-
-//        //给用户发送题目
-//        UserService::sendDataBags($active_id, $data);
-//        $data['answer'] = $question['answer'];
-//        //返回屏幕题目和答案
-//        ScreenManagerService::sendDataBags($active_id, $data);
-//        $active = new Activity();
-//        $active->change_question_index($active_id, $display_order, $round_num);
+        //给用户发送题目
+        UserService::sendDataBags($active_id, $data);
+        $data['answer'] = $question['answer'];
+        //返回屏幕题目和答案
+        ScreenManagerService::sendDataBags($active_id, $data);
+        $active = new Activity();
+        $active->change_question_index($active_id, $display_order, $round_num);
     }
 
 
