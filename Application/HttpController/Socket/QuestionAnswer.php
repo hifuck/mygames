@@ -10,55 +10,44 @@ namespace App\HttpController\Socket;
 
 
 use App\Model\Activity;
-use App\Model\Manager;
 use App\Model\Questions;
-use App\Model\QuestionUser;
+use App\Services\ScreenManagerService;
+use App\Services\UserService;
 use EasySwoole\Core\Socket\WebSocketController;
-use EasySwoole\Core\Swoole\Task\TaskManager;
 
 class QuestionAnswer extends WebSocketController
 {
+    protected $userids = 'user_ids_';
+    protected $manager_fds = 'manager_fds_';
+    protected $question_round = 'question_round_';
+
     #用户端 用户接入
     function user_login()
     {
         $request = $this->request()->getArg('content');
         $user_id = $request['user_id'];
         $active_id = $request['active_id'];
-        $user_client = new QuestionUser();
-        if (!$user_client->is_online($active_id, $user_id)) {
-            $client_log['user_id'] = $user_id;
-            $client_log['active_id'] = $active_id;
-            $client_log['round_number'] = 0;
-            $client_log['status'] = 1;
-            $client_log['client_id'] = $this->client()->getFd();
-            $user_client->add($client_log);
-        }
+        UserService::addUser($active_id, $user_id, $this->client()->getFd());
+        $data['type'] = 1;
+        $data['count'] = UserService::getUserCount($active_id);
+        ScreenManagerService::sendDataBags($active_id, $data);
     }
 
+    //用户答题
     function user_answer()
     {
         $request = $this->request()->getArg('content');
-
         $id = $request['question_id'];
+        $active_id = $request['active_id'];
         $questionObj = new Questions();
         $question = $questionObj->findById($id);
-
-
-        $questionuserObj = new QuestionUser();
         //回答错误
         if ($question['answer'] != $request['answer']) {
-
-            $active_id = $request['active_id'];
-            $user_id = $request['user_id'];
-            $round_num = $request['round_num'];
-
-            $questionuserObj->answer_wrong($active_id, $user_id, $round_num);
+            UserService::removeUser($active_id, $request['user_id']);
         }
         $data['type'] = 1;
-        $data['count'] = $questionuserObj->left_count($active_id, $round_num);
-        $data = json_encode($data, 256);
-        $manager = new Manager();
-        $manager->send_message($request['active_id'], $data);
+        $data['count'] = UserService::getUserCount($active_id);
+        ScreenManagerService::sendDataBags($active_id, $data);
     }
 
     #屏幕端 屏幕介入
@@ -66,20 +55,10 @@ class QuestionAnswer extends WebSocketController
     {
         $request = $this->request()->getArg('content');
         $active_id = $request['active_id'];
-        $round_num = $request['round_num'];
-        $questionuserObj = new QuestionUser();
-        $count = $questionuserObj->left_count($active_id, $round_num);
-        $manager = new Manager();
-        $manager_info['active_id'] = $active_id;
-        $manager_info['client_id'] = $this->client()->getFd();
-        $manager->add($manager_info);
         $fd = $this->client()->getFd();
         $data['type'] = 1;
-        $data['count'] = $count;
-        $data = json_encode($data, 256);
-        TaskManager::async(function () use ($fd, $data) {
-            SocketResponse::response($fd, $data);
-        });
+        $data['count'] = UserService::getUserCount($active_id);
+        ScreenManagerService::sendDataBags($active_id, $data, $fd);
     }
 
     #发送问题
@@ -92,22 +71,17 @@ class QuestionAnswer extends WebSocketController
         $que = new Questions();
         $question = $que->find($active_id, $round_num, $display_order);
         $data['type'] = 2;
+        $data['id'] = $question['id'];
+        $data['title'] = $question['title'];
         $data['options'] = unserialize($question['options']);
         $data['display_order'] = $question['display_order'];
-        $data['title'] = $question['title'];
+        //给用户发送题目
+        UserService::sendDataBags($active_id, $data);
         $data['answer'] = $question['answer'];
-        $data['id'] = $question['id'];
-        $data = json_encode($data, 256);
+        //返回屏幕题目和答案
+        ScreenManagerService::sendDataBags($active_id, $data);
         $active = new Activity();
         $active->change_question_index($active_id, $display_order, $round_num);
-        //给用户发送题目
-        $user_client = new QuestionUser();
-        $user_client->send_message($active_id, $round_num, $data);
-        //返回屏幕题目
-        $fd = $this->client()->getFd();
-        TaskManager::async(function () use ($fd, $data) {
-            SocketResponse::response($fd, $data);
-        });
     }
 
 

@@ -17,6 +17,7 @@ class Manager extends BaseModel
 {
     protected $tableName = 'active_managers';
 
+
     public function add($data)
     {
         return $this->db->insert($this->tableName, $data);

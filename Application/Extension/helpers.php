@@ -1,6 +1,7 @@
 <?php
 
 use App\Exceptions\WxPay\WxComPay;
+use EasySwoole\Core\Swoole\ServerManager;
 
 /**
  * 获取当前登录的用户
@@ -777,5 +778,21 @@ function wechat_cash($params = array(), $openid, $amount)
         $tips['info'] = '支付失败' . $this->error = $rsxml->return_msg;
     }
     return $tips;
+}
+
+//检测fd是否有效
+function check_fd($fd)
+{
+    $info = ServerManager::getInstance()->getServer()->connection_info($fd);
+    if (is_array($info) && $info['websocket_status']) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function getAllClients()
+{
+    ServerManager::getInstance()->getServer()->connection_list();
 }
 
