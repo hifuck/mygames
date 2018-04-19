@@ -23,7 +23,7 @@ class ScreenManagerService
             if ($fd) {
                 SocketResponse::response($fd, $data);
             } else {
-                $managers = self::getManagers($active_id);
+                $managers = ScreenManagerService::getManagers($active_id);
                 foreach ($managers as $index => $fd) {
                     if (check_fd($fd)) {
                         SocketResponse::response($fd, $data);
@@ -31,27 +31,27 @@ class ScreenManagerService
                         unset($managers[$index]);
                     }
                 }
-                self::updateManagers($active_id, $managers);
+                ScreenManagerService::updateManagers($active_id, $managers);
             }
         });
     }
 
     public static function adddManager($active_id, $fd)
     {
-        $manager_fds = Cache::getInstance()->get(self::$key . $active_id);
+        $manager_fds = Cache::getInstance()->get(ScreenManagerService::$key . $active_id);
         if (!$manager_fds)
             $manager_fds = [];
         $manager_fds[] = $fd;
-        Cache::getInstance()->set(self::$key . $active_id, $manager_fds);
+        Cache::getInstance()->set(ScreenManagerService::$key . $active_id, $manager_fds);
     }
 
     public static function getManagers($active_id)
     {
-        return Cache::getInstance()->get(self::$key . $active_id);
+        return Cache::getInstance()->get(ScreenManagerService::$key . $active_id);
     }
 
     public static function updateManagers($active_id, $managers)
     {
-        Cache::getInstance()->set(self::$key . $active_id, $managers);
+        Cache::getInstance()->set(ScreenManagerService::$key . $active_id, $managers);
     }
 }

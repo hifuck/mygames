@@ -18,8 +18,8 @@ class UserService
     //用户接入
     public static function addUser($active_id, $user_id, $fd)
     {
-        $user_key = self::get_user_key($active_id, $user_id);
-        $list_key = self::get_list_key($active_id);
+        $user_key = UserService::get_user_key($active_id, $user_id);
+        $list_key = UserService::get_list_key($active_id);
         if (!Cache::getInstance()->get($user_key)) {
             //用户 fd 对照
             $user_client['user_id'] = $user_id;
@@ -40,9 +40,9 @@ class UserService
     public static function removeUser($active_id, $user_id, $user_key = null)
     {
         if (!$user_key) {
-            $user_key = self::get_user_key($active_id, $user_id);
+            $user_key = UserService::get_user_key($active_id, $user_id);
         }
-        $list_key = self::get_list_key($active_id);
+        $list_key = UserService::get_list_key($active_id);
 
         Cache::getInstance()->del($user_key);
 
@@ -65,14 +65,14 @@ class UserService
                     SocketResponse::response($fd, $data);
                 }
             } else {
-                $user_key_list = self::getUserList($active_id);
+                $user_key_list = UserService::getUserList($active_id);
                 foreach ($user_key_list as $index => $user_key) {
                     $user = Cache::getInstance()->get($user_key);
                     $fd = $user['fd'];
                     if (check_fd($fd)) {
                         SocketResponse::response($fd, $data);
                     } else {
-                        self::removeUser($active_id, null, $user_key);
+                        UserService::removeUser($active_id, null, $user_key);
                     }
                 }
             }
@@ -81,14 +81,14 @@ class UserService
 
     public static function getUserCount($active_id)
     {
-        $list_key = self::get_list_key($active_id);
+        $list_key = UserService::get_list_key($active_id);
         $user_list = Cache::getInstance()->get($list_key);
         return count($user_list);
     }
 
     public static function getUserList($active_id)
     {
-        $list_key = self::get_list_key($active_id);
+        $list_key = UserService::get_list_key($active_id);
         return Cache::getInstance()->get($list_key);
     }
 
