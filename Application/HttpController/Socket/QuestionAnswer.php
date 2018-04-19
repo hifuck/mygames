@@ -13,6 +13,7 @@ use App\HttpController\Services\ScreenManagerService;
 use App\HttpController\Services\UserService;
 use App\Model\Activity;
 use App\Model\Questions;
+use App\Model\QuestionWinner;
 use EasySwoole\Core\Socket\WebSocketController;
 
 class QuestionAnswer extends WebSocketController
@@ -62,7 +63,18 @@ class QuestionAnswer extends WebSocketController
             $user_data['type'] = 4;
             UserService::sendDataBags($active_id, $user_data, $this->client()->getFd());
         } else {
+            //回答正确
             $data['type'] = 3;
+            if ($question['display_order'] == 12) {
+                //最后一题回答正确
+                $winnerObj = new QuestionWinner();
+                $winner['active_id'] = $active_id;
+                $winner['round_number'] = $question['round_number'];
+                $winner['user_id'] = $request['user_id'];
+                $winnerObj->add($winner);
+                $data['type'] = 666;
+            }
+
             UserService::sendDataBags($active_id, $data, $this->client()->getFd());
         }
     }
