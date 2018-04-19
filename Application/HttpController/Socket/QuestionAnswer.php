@@ -31,7 +31,7 @@ class QuestionAnswer extends WebSocketController
         $data['type'] = 1;
         $data['count'] = UserService::getUserCount($active_id);
         ScreenManagerService::sendDataBags($active_id, $data);
-        $this->response()->write($this->client()->getFd());
+        $this->response()->write(json_encode(UserService::getUserList($active_id)));
     }
 
     function user_logout(){
