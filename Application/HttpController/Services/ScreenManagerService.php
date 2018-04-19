@@ -29,6 +29,7 @@ class ScreenManagerService
                         SocketResponse::response($fd, $data);
                     } else {
                         unset($managers[$index]);
+                        SocketResponse::response($fd, [],'无用户');
                     }
                 }
                 ScreenManagerService::updateManagers($active_id, $managers);

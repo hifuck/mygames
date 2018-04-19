@@ -75,6 +75,13 @@ class QuestionAnswer extends WebSocketController
         $data['title'] = $question['title'];
         $data['options'] = unserialize($question['options']);
         $data['display_order'] = $question['display_order'];
+
+        $managers = ScreenManagerService::getManagers($active_id);
+        $fd = $this->client()->getFd();
+        $data['type'] = 2;
+        $data['data'] = $managers;
+        ScreenManagerService::sendDataBags($active_id, $data, $fd);
+
         //给用户发送题目
         UserService::sendDataBags($active_id, $data);
         $data['answer'] = $question['answer'];
