@@ -24,18 +24,38 @@ class QuestionAnswer extends WebSocketController
         $request = $this->request()->getArg('content');
         $user_id = $request['user_id'];
         $active_id = $request['active_id'];
-        $round_num = $request['round_num'];
         $user_client = new QuestionUser();
-        if (!$user_client->is_online($active_id, $user_id, $round_num)) {
+        if (!$user_client->is_online($active_id, $user_id)) {
             $client_log['user_id'] = $user_id;
             $client_log['active_id'] = $active_id;
-            $client_log['round_number'] = $round_num;
+            $client_log['round_number'] = 0;
             $client_log['status'] = 1;
             $client_log['client_id'] = $this->client()->getFd();
             $user_client->add($client_log);
         }
+    }
+
+    function user_answer()
+    {
+        $request = $this->request()->getArg('content');
+
+        $id = $request['question_id'];
+        $questionObj = new Questions();
+        $question = $questionObj->findById($id);
+
+
+        $questionuserObj = new QuestionUser();
+        //回答错误
+        if ($question['answer'] != $request['answer']) {
+
+            $active_id = $request['active_id'];
+            $user_id = $request['user_id'];
+            $round_num = $request['round_num'];
+
+            $questionuserObj->answer_wrong($active_id, $user_id, $round_num);
+        }
         $data['type'] = 1;
-        $data['count'] = $user_client->online_num($active_id, $round_num);
+        $data['count'] = $questionuserObj->left_count($active_id, $round_num);
         $data = json_encode($data, 256);
         $manager = new Manager();
         $manager->send_message($request['active_id'], $data);
@@ -47,8 +67,8 @@ class QuestionAnswer extends WebSocketController
         $request = $this->request()->getArg('content');
         $active_id = $request['active_id'];
         $round_num = $request['round_num'];
-        $user_client = new QuestionUser();
-        $count = $user_client->online_num($active_id, $round_num);
+        $questionuserObj = new QuestionUser();
+        $count = $questionuserObj->left_count($active_id, $round_num);
         $manager = new Manager();
         $manager_info['active_id'] = $active_id;
         $manager_info['client_id'] = $this->client()->getFd();

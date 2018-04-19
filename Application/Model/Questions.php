@@ -18,4 +18,9 @@ class Questions extends BaseModel
     {
         return $this->db->where('active_id', $active_id)->where('round_number', $round_num)->where('display_order', $display_order)->getOne($this->tableName);
     }
+
+    public function findById($id)
+    {
+        return $this->db->where('id',$id)->getOne($this->tableName);
+    }
 }
