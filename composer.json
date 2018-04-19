@@ -8,6 +8,10 @@
     "psr-4": {
       "App\\": "Application/"
     },
-    "files":["Application/Extension/helpers.php"]
+    "files": [
+      "Application/Extension/helpers.php",
+      "Application/Services/ScreenManagerService.php",
+      "Application/Services/UserService.php"
+    ]
   }
 }
