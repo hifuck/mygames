@@ -11,9 +11,7 @@ namespace App\HttpController\Socket;
 
 use App\HttpController\Services\ScreenManagerService;
 use App\HttpController\Services\UserService;
-use App\Model\Activity;
 use App\Model\Questions;
-use EasySwoole\Core\Component\Cache\Cache;
 use EasySwoole\Core\Socket\WebSocketController;
 
 class QuestionAnswer extends WebSocketController
@@ -59,6 +57,7 @@ class QuestionAnswer extends WebSocketController
         $fd = $this->client()->getFd();
         $data['type'] = 1;
         $data['count'] = UserService::getUserCount($active_id);
+        ScreenManagerService::adddManager($active_id, $fd);
         ScreenManagerService::sendDataBags($active_id, $data, $fd);
     }
 
