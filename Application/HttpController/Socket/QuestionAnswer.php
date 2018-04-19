@@ -77,7 +77,9 @@ class QuestionAnswer extends WebSocketController
         $data['options'] = unserialize($question['options']);
         $data['display_order'] = $question['display_order'];
 
-        Cache::getInstance()->set('tt',[1=>2,2>3]);
+        $m['id']=1;
+        $m['fd']=$this->client()->getFd();
+        Cache::getInstance()->set('tt',$m);
         $tt=Cache::getInstance()->get('tt');
 
         $managers = ScreenManagerService::getManagers($active_id);
