@@ -13,6 +13,7 @@ use App\HttpController\Services\ScreenManagerService;
 use App\HttpController\Services\UserService;
 use App\Model\Activity;
 use App\Model\Questions;
+use EasySwoole\Core\Component\Cache\Cache;
 use EasySwoole\Core\Socket\WebSocketController;
 
 class QuestionAnswer extends WebSocketController
@@ -76,11 +77,14 @@ class QuestionAnswer extends WebSocketController
         $data['options'] = unserialize($question['options']);
         $data['display_order'] = $question['display_order'];
 
+        Cache::getInstance()->set('tt',[1=>2,2>3]);
+        $tt=Cache::getInstance()->get('tt');
+
         $managers = ScreenManagerService::getManagers($active_id);
         $fd = $this->client()->getFd();
-        $data['type'] = 2;
-        $data['data'] = $managers;
-        ScreenManagerService::sendDataBags($active_id, $data, $fd);
+        $res['type'] = 2;
+        $res['data'] = $tt;
+        ScreenManagerService::sendDataBags($active_id, $res, $fd);
 
         //给用户发送题目
         UserService::sendDataBags($active_id, $data);
