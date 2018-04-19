@@ -59,7 +59,7 @@ class QuestionAnswer extends WebSocketController
         $data['type'] = 1;
         $data['count'] = UserService::getUserCount($active_id);
         $this->response()->write('12341234');
-//        ScreenManagerService::sendDataBags($active_id, $data, $fd);
+        ScreenManagerService::sendDataBags($active_id, $data, $fd);
     }
 
     #发送问题
