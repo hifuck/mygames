@@ -47,6 +47,7 @@ class UserService
         Cache::getInstance()->del($user_key);
 
         $user_list = Cache::getInstance()->get($list_key);
+        $user_list=is_array($user_list)?$user_list:[];
         foreach ($user_list as $index => $user) {
             if ($user_key == $user) {
                 unset($user_list[$index]);
@@ -89,7 +90,8 @@ class UserService
     public static function getUserList($active_id)
     {
         $list_key = UserService::get_list_key($active_id);
-        return Cache::getInstance()->get($list_key);
+        $user_list = Cache::getInstance()->get($list_key);
+        return is_array($user_list) ? $user_list : [];
     }
 
 

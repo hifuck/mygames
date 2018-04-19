@@ -47,7 +47,8 @@ class ScreenManagerService
 
     public static function getManagers($active_id)
     {
-        return Cache::getInstance()->get(ScreenManagerService::$key . $active_id);
+        $managers=Cache::getInstance()->get(ScreenManagerService::$key . $active_id);
+        return is_array($managers)?$managers:[];
     }
 
     public static function updateManagers($active_id, $managers)
