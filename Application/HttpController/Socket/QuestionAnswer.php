@@ -27,18 +27,10 @@ class QuestionAnswer extends WebSocketController
         $request = $this->request()->getArg('content');
         $user_id = $request['user_id'];
         $active_id = $request['active_id'];
-        $activeObj=new Activity();
-        $active=$activeObj->find($active_id);
-        if($active['question_index']!=1)
-        {
-            $data['type'] = 88;
-            UserService::sendDataBags($active_id,$data,$this->client()->getFd());
-        }else{
-            UserService::addUser($active_id, $user_id, $this->client()->getFd());
-            $data['type'] = 1;
-            $data['count'] = UserService::getUserCount($active_id);
-            ScreenManagerService::sendDataBags($active_id, $data);
-        }
+        UserService::addUser($active_id, $user_id, $this->client()->getFd());
+        $data['type'] = 1;
+        $data['count'] = UserService::getUserCount($active_id);
+        ScreenManagerService::sendDataBags($active_id, $data);
 
     }
 

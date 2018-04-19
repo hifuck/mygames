@@ -10,6 +10,7 @@ namespace App\HttpController\Services;
 
 
 use App\HttpController\Socket\SocketResponse;
+use App\Model\Activity;
 use EasySwoole\Core\Component\Cache\Cache;
 use EasySwoole\Core\Swoole\Task\TaskManager;
 
@@ -20,19 +21,35 @@ class UserService
     {
         $user_key = UserService::get_user_key($active_id, $user_id);
         $list_key = UserService::get_list_key($active_id);
-        if (!Cache::getInstance()->get($user_key)) {
-            //用户 fd 对照
+        $user_info = Cache::getInstance()->get($user_key);
+        //未接入
+        if (!$user_info) {
+            $activeObj = new Activity();
+            $active = $activeObj->find($active_id);
+            if ($active['question_index'] != 1) {
+                //游戏已经开始
+                $data['type'] = 88;
+                UserService::sendDataBags($active_id, $data, $fd);
+            } else {
+                //用户 fd 对照
+                $user_client['user_id'] = $user_id;
+                $user_client['active_id'] = $active_id;
+                $user_client['fd'] = $fd;
+                Cache::getInstance()->set($user_key, $user_client);
+                //用户列表
+                $user_list = Cache::getInstance()->get($list_key);
+                if (!$user_list || count($user_list) == 0) {
+                    $user_list = [];
+                }
+                $user_list[] = $user_key;
+                Cache::getInstance()->set($list_key, $user_list);
+            }
+        } else {
+            //刷新fd
             $user_client['user_id'] = $user_id;
             $user_client['active_id'] = $active_id;
             $user_client['fd'] = $fd;
             Cache::getInstance()->set($user_key, $user_client);
-            //用户列表
-            $user_list = Cache::getInstance()->get($list_key);
-            if (!$user_list || count($user_list) == 0) {
-                $user_list = [];
-            }
-            $user_list[] = $user_key;
-            Cache::getInstance()->set($list_key, $user_list);
         }
     }
 
@@ -47,7 +64,7 @@ class UserService
         Cache::getInstance()->del($user_key);
 
         $user_list = Cache::getInstance()->get($list_key);
-        $user_list=is_array($user_list)?$user_list:[];
+        $user_list = is_array($user_list) ? $user_list : [];
         foreach ($user_list as $index => $user) {
             if ($user_key == $user) {
                 unset($user_list[$index]);
