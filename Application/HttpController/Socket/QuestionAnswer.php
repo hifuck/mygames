@@ -9,10 +9,10 @@
 namespace App\HttpController\Socket;
 
 
+use App\HttpController\Services\ScreenManagerService;
+use App\HttpController\Services\UserService;
 use App\Model\Activity;
 use App\Model\Questions;
-use App\Services\ScreenManagerService;
-use App\Services\UserService;
 use EasySwoole\Core\Socket\WebSocketController;
 
 class QuestionAnswer extends WebSocketController

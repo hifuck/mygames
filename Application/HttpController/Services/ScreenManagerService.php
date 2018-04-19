@@ -6,7 +6,7 @@
  * Time: 16:29
  */
 
-namespace App\Services;
+namespace App\HttpController\Services;
 
 
 use App\HttpController\Socket\SocketResponse;

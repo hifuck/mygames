@@ -9,9 +9,7 @@
       "App\\": "Application/"
     },
     "files": [
-      "Application/Extension/helpers.php",
-      "Application/Services/ScreenManagerService.php",
-      "Application/Services/UserService.php"
+      "Application/Extension/helpers.php"
     ]
   }
 }
