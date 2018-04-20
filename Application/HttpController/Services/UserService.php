@@ -77,24 +77,24 @@ class UserService
     //发送消息
     public static function sendDataBags($active_id, $data = [], $fd = null)
     {
-        TaskManager::async(function () use ($active_id, $data, $fd) {
-            if ($fd) {
+        if ($fd) {
+            TaskManager::async(function () use ($active_id, $data, $fd) {
                 if (check_fd($fd)) {
                     SocketResponse::response($fd, $data);
                 }
-            } else {
-                $user_key_list = UserService::getUserList($active_id);
-                foreach ($user_key_list as $index => $user_key) {
-                    $user = Cache::getInstance()->get($user_key);
-                    $fd = $user['fd'];
-                    if (check_fd($fd)) {
-                        SocketResponse::response($fd, $data);
-                    } else {
-                        UserService::removeUser($active_id, null, $user_key);
-                    }
+            });
+        } else {
+            $user_key_list = UserService::getUserList($active_id);
+            foreach ($user_key_list as $index => $user_key) {
+                $user = Cache::getInstance()->get($user_key);
+                $fd = $user['fd'];
+                if (check_fd($fd)) {
+                    SocketResponse::response($fd, $data);
+                } else {
+                    UserService::removeUser($active_id, null, $user_key);
                 }
             }
-        });
+        }
     }
 
     public static function getUserCount($active_id)
