@@ -9,10 +9,6 @@
 namespace App\Model;
 
 
-use App\HttpController\Socket\SocketResponse;
-use EasySwoole\Core\Swoole\ServerManager;
-use EasySwoole\Core\Swoole\Task\TaskManager;
-
 class QuestionWinner extends BaseModel
 {
     protected $tableName = 'question_winners';
