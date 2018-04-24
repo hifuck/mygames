@@ -19,16 +19,18 @@ class ScreenManagerService
 
     public static function sendDataBags($active_id, $data = [], $fd = null)
     {
-        TaskManager::async(function () use ($active_id, $data, $fd) {
-            if ($fd) {
-                SocketResponse::response($fd, $data);
-            } else {
-                $fd = ScreenManagerService::getManager($active_id);
+        if ($fd) {
+            TaskManager::async(function () use ($data, $fd) {
                 if (check_fd($fd)) {
                     SocketResponse::response($fd, $data);
                 }
+            });
+        } else {
+            $fd = ScreenManagerService::getManager($active_id);
+            if (check_fd($fd)) {
+                SocketResponse::response($fd, $data);
             }
-        });
+        }
     }
 
     public static function adddManager($active_id, $fd)
