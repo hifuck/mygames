@@ -22,7 +22,7 @@ class Index extends Controller
         if ($res) {
             Cache::getInstance()->set($key, '测试');
         }
-        $this->response()->write($res);
+        $this->response()->write($res?$res:'');
     }
 
     function back()
