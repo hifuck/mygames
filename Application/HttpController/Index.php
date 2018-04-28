@@ -9,6 +9,7 @@
 namespace App\HttpController;
 
 
+use EasySwoole\Core\Component\Cache\Cache;
 use EasySwoole\Core\Http\AbstractInterface\Controller;
 
 class Index extends Controller
@@ -16,8 +17,12 @@ class Index extends Controller
 
     function index()
     {
-        $content = file_get_contents(__DIR__ . '/user.html');
-        $this->response()->write($content);
+        $key = 'ttt_ppp';
+        $res = Cache::getInstance()->get($key);
+        if ($res) {
+            Cache::getInstance()->set($key, '测试');
+        }
+        $this->response()->write($res);
     }
 
     function back()
