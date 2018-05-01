@@ -65,7 +65,9 @@ class QuestionAnswer extends WebSocketController
         } else {
             //回答正确
             $data['type'] = 3;
-            if ($question['display_order'] == 12) {
+            $active_obj = new Activity();
+            $active = $active_obj->find($active_id);
+            if ($question['display_order'] == $active['max_question_count']) {
                 //最后一题回答正确
                 $winnerObj = new QuestionWinner();
                 $winner['active_id'] = $active_id;
