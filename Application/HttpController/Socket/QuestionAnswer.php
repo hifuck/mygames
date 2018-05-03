@@ -87,6 +87,7 @@ class QuestionAnswer extends WebSocketController
         $request = $this->request()->getArg('content');
         $active_id = $request['active_id'];
         $fd = $this->client()->getFd();
+        UserService::cleanUpUsers($active_id);
         $data['type'] = 1;
         $data['count'] = UserService::getUserCount($active_id);
         ScreenManagerService::adddManager($active_id, $fd);

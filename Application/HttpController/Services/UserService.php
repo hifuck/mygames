@@ -104,6 +104,15 @@ class UserService
         return count($user_list);
     }
 
+    #初始化人数
+    public static function cleanUpUsers($active_id)
+    {
+        $user_list = UserService::getUserList($active_id);
+        foreach ($user_list as $user_key) {
+            UserService::removeUser($active_id, null, $user_key);
+        }
+    }
+
     public static function getUserList($active_id)
     {
         $list_key = UserService::get_list_key($active_id);
