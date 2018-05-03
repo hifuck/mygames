@@ -102,10 +102,23 @@ class QuestionAnswer extends WebSocketController
         $display_order = $request['num'];
         $que = new Questions();
         $question = $que->find($active_id, $round_num, $display_order);
+
+        $orders = [
+            0 => 'A',
+            1 => 'B',
+            2 => 'C',
+            3 => 'D',
+            4 => 'E',
+        ];
+        $options = [];
+        foreach (unserialize($question['options']) as $key => $option) {
+            $options[] = $orders[$key] . ":" . $option;
+        }
+
         $data['type'] = 2;
         $data['id'] = $question['id'];
         $data['title'] = $question['title'];
-        $data['options'] = unserialize($question['options']);
+        $data['options'] = $options;
         $data['display_order'] = $question['display_order'];
         //给用户发送题目
         UserService::sendDataBags($active_id, $data);
